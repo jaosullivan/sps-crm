@@ -25,7 +25,7 @@ Image tags: `sps-crm-api:local`, `sps-crm-web:local`. EKS Terraform stays parked
 2. Container Engine **dockerd (moby)** so `docker build` images are cluster-visible.
 3. kubectl context: `rancher-desktop`.
 
-### Build + apply
+### Build + apply (kubectl)
 
 ```bash
 docker build -f api/Dockerfile -t sps-crm-api:local ./api
@@ -38,25 +38,29 @@ kubectl -n golf rollout status deploy/golf
 
 Use an API image that includes `GET /ready` (current `main`). Login: `admin@stpatrickshk.com` / `changeme`.
 
-Rancher UI: Cluster Explorer → namespaces `cms` / `website` / `golf`.
+### Argo CD (monitor cms / website / golf)
 
-### One-liner
+See [`../argocd/README.md`](../argocd/README.md).
 
 ```bash
-NP=$(kubectl -n kube-system get svc traefik -o jsonpath='{.spec.ports[?(@.port==80)].nodePort}')
-docker build -f api/Dockerfile -t sps-crm-api:local ./api \
-  && docker build -f web/Dockerfile -t sps-crm-web:local . \
-  && kubectl apply -k deploy/kustomize/overlays/local \
-  && kubectl -n cms rollout status deploy/postgres deploy/api deploy/web \
-  && echo "CMS http://cms.localhost:${NP}  golf http://golf.localhost:${NP}"
+# after Argo CD is installed (Skellig already has argocd / argocd.local)
+kubectl apply -f deploy/argocd/root-application.yaml
 ```
+
+- Repo: `https://github.com/jaosullivan/sps-crm`
+- App-of-Apps path: `deploy/argocd/apps`
+- Child apps: `sps-cms` → `deploy/kustomize/apps/cms`, `sps-website`, `sps-golf`
+- `targetRevision`: `devops/kan-8-eks-scaffold` until PR #2 merges, then `main`
+
+Rancher UI / Argo UI both show the three apps. EKS later: same Applications, change destination cluster + image digests.
 
 ## Optional: kind / k3d
 
-See older notes — use `kind load` / `k3d image import` + port-forward `svc/web 8080:80` if Traefik hosts are unavailable.
+Use `kind load` / `k3d image import` + port-forward `svc/web 8080:80` if Traefik hosts are unavailable.
 
 ## Tear down
 
 ```bash
 kubectl delete -k deploy/kustomize/overlays/local
+# Argo: kubectl delete -f deploy/argocd/root-application.yaml
 ```
