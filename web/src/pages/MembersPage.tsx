@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Select } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent } from '@/components/ui/card'
+import { EmptyState } from '@/components/EmptyState'
 
 const emptyForm: MemberCreate = {
   first_name: '',
@@ -133,7 +134,7 @@ export function MembersPage() {
 
       <div className="mb-4 flex gap-2">
         <Input
-          placeholder="Search members…"
+          placeholder="Search members..."
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => {
@@ -167,13 +168,22 @@ export function MembersPage() {
               {loading ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-8 text-center text-sps-muted">
-                    Loading…
+                    Loading...
                   </td>
                 </tr>
               ) : items.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-sps-muted">
-                    No members found.
+                  <td colSpan={6} className="p-0">
+                    <EmptyState
+                      title="No members yet"
+                      description="Add your first society member to start the directory."
+                      action={
+                        <Button onClick={openCreate}>
+                          <Plus className="h-4 w-4" />
+                          Add member
+                        </Button>
+                      }
+                    />
                   </td>
                 </tr>
               ) : (
@@ -184,7 +194,7 @@ export function MembersPage() {
                     </td>
                     <td className="px-4 py-3 text-sps-muted">{m.email}</td>
                     <td className="px-4 py-3 capitalize">{m.status}</td>
-                    <td className="px-4 py-3">{m.company_name || '—'}</td>
+                    <td className="px-4 py-3">{m.company_name || '-'}</td>
                     <td className="px-4 py-3">{formatDate(m.joined_on)}</td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-1">
@@ -214,7 +224,7 @@ export function MembersPage() {
               Cancel
             </Button>
             <Button type="submit" form="member-form" disabled={saving}>
-              {saving ? 'Saving…' : 'Save'}
+              {saving ? 'Saving...' : 'Save'}
             </Button>
           </>
         }
