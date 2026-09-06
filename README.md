@@ -48,26 +48,47 @@ cd web && npm install && VITE_API_BASE_URL=http://localhost:8000 npm run dev
 3. Open http://localhost:5173 and log in as `admin@stpatrickshk.com` / `changeme`
 4. Manage members, sponsors, companies, and deals
 
+## Single-host production (KAN-5)
+
+Minimal path: Compose base + prod overlay. API binds to `127.0.0.1:8000` (put nginx/Caddy in front); Postgres is not published to the host.
+
+```bash
+cp .env.production.example .env
+# fill JWT_SECRET, ADMIN_PASSWORD, POSTGRES_PASSWORD, DATABASE_URL, CORS_ORIGINS
+# JWT_SECRET: openssl rand -hex 32
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+curl -fsS http://127.0.0.1:8000/health
+```
+
+- Overlay forces `APP_ENV=production` and requires secrets (no weak defaults).
+- Serve the Vite build (`cd web && npm run build`) from your reverse proxy, or keep a separate static host; set `CORS_ORIGINS` to that origin.
+- Needs Docker Compose v2.24+ (`!override` for ports).
+
 ## Layout
 
 | Path | Owner |
 |------|--------|
 | `api/` | Backend — models, JWT auth, REST, OpenAPI, seed |
 | `web/` | Frontend — app shell, auth, CRUD, dashboard |
-| `docker-compose.yml` | DevOps — Postgres + API |
+| `ios/` | iOS — SwiftUI companion (KAN-7) |
+| `docker-compose.yml` | DevOps — local Postgres + API |
+| `docker-compose.prod.yml` | DevOps — production overlay |
+| `.env.production.example` | DevOps — prod env placeholders (no real secrets) |
 | `.github/workflows/ci.yml` | DevOps — lint / import / build |
 
 API contract: [`api/API_CONTRACT.md`](api/API_CONTRACT.md)
 
 ## Env (no secrets in git)
 
-Root `.env.example` is for Compose. Key vars:
+Root `.env.example` is for **local** Compose. Key vars:
 
 - `APP_ENV` — `development` (default) allows local placeholders; set `production` / `staging` to enforce strong secrets
 - `DATABASE_URL` — async Postgres URL (`@db` in Compose, `@localhost` for host runs)
 - `JWT_SECRET` — signing key for access tokens
 - `CORS_ORIGINS` — comma-separated
 - `ADMIN_EMAIL` / `ADMIN_PASSWORD` / `ADMIN_FULL_NAME`
+
+Production: use [`.env.production.example`](.env.production.example) (placeholders only — never commit a filled `.env`).
 
 Frontend (`web/.env.example`):
 
@@ -90,6 +111,8 @@ On push/PR to `main`:
 - API: install deps, import `app.main`, build Docker image
 - Web: lint + build when `web/package.json` exists
 - Compose: `docker compose config` validation
+
+Editing `.github/workflows/*` via the GitHub connector needs a PAT with the `workflow` scope (`repo` alone is not enough).
 
 ## Ops notes
 
