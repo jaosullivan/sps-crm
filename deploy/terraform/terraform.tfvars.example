@@ -1,0 +1,5 @@
+aws_region   = "ap-southeast-1"
+environment  = "prod"
+cluster_name = "sps-crm"
+public_host  = "crm.example.com"
+# acm_certificate_arn = "arn:aws:acm:ap-southeast-1:ACCOUNT:certificate/..."

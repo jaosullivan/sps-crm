@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: golf
+  namespace: golf
+  labels:
+    app: golf
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: golf
+  template:
+    metadata:
+      labels:
+        app: golf
+    spec:
+      containers:
+        - name: golf
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 80
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: golf
+  namespace: golf
+spec:
+  selector:
+    app: golf
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
