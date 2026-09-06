@@ -5,3 +5,4 @@ resources:
   - cms.yaml
   - website.yaml
   - golf.yaml
+  - ingress.yaml
