@@ -42,7 +42,7 @@ export function LoginPage() {
         <div className="border-b border-sps-border bg-white px-6 py-5">
           <div className="flex items-center gap-3">
             <img
-              src="/sphk-logo.svg"
+              src="/favicon.svg"
               alt="SPS Hong Kong logo"
               className="h-14 w-14 rounded-md bg-black object-contain"
             />

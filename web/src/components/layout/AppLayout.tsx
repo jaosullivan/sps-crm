@@ -34,7 +34,7 @@ export function AppLayout() {
         <div className="border-b border-sps-border px-4 py-4">
           <div className="flex items-center gap-3">
             <img
-              src="/sphk-logo-header.svg"
+              src="https://static.wixstatic.com/media/ef9572_9049fdb0d6484286a126e71bad334748~mv2.png/v1/fill/w_378,h_194,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/stpatslogo.png"
               alt="St. Patrick's Society Hong Kong"
               className="h-10 w-auto rounded-sm bg-black object-contain"
             />
