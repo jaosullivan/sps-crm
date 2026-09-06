@@ -1,66 +1,68 @@
-# Local kind / k3d (KAN-8 first path)
+# Local cluster — Rancher Desktop first (KAN-8)
 
-Run SPS CRM on a local cluster **before** any EKS apply. Three namespaces:
+Prefer **Rancher Desktop** (k3s + Traefik + UI). kind/k3d remain optional fallbacks.
 
-| Namespace | Role |
-|-----------|------|
-| `cms` | CRM API + web (nginx same-origin `/api`) + Postgres |
-| `website` | Placeholder Deployment (public site slot) |
-| `golf` | Placeholder Deployment (golf app slot) |
+| Namespace | Role | Ingress host | Skellig NodePort today |
+|-----------|------|--------------|------------------------|
+| `cms` | CRM API + web + Postgres | **http://cms.localhost** | http://localhost:30390 |
+| `website` | Placeholder | **http://website.localhost** | http://localhost:31297 |
+| `golf` | Placeholder | **http://golf.localhost** | http://localhost:32693 |
 
-EKS Terraform under `../terraform/` stays for later — do not apply until AWS access is confirmed.
+Images: `sps-crm-api:local`, `sps-crm-web:local`.
 
-## One-liner (kind + cms smoke)
+Argo CD on Skellig: https://localhost:32675 (apps `sps-crm-local`, `spshk-production-app`).
 
-From repo root (after `web/Dockerfile` is on main):
+## Rancher Desktop (preferred)
 
-```bash
-kind create cluster --name sps --config deploy/local/kind-config.yaml \
-  && docker build -f api/Dockerfile -t sps-crm-api:local ./api \
-  && docker build -f web/Dockerfile -t sps-crm-web:local . \
-  && kind load docker-image sps-crm-api:local sps-crm-web:local --name sps \
-  && kubectl apply -k deploy/kustomize/overlays/local \
-  && kubectl -n cms rollout status deploy/postgres deploy/api deploy/web \
-  && kubectl -n cms port-forward svc/web 8080:80
-```
-
-Then open http://localhost:8080 — login `admin@stpatrickshk.com` / `changeme`. Probes: `/health` + `/ready`. Local Postgres has no `ssl=require` (RDS-only later).
-
-`website` / `golf` stay nginx placeholders.
-
-## Prerequisites
-
-- Docker, kind (or k3d), kubectl
-
-## kind / k3d (stepwise)
-
-```bash
-kind create cluster --name sps --config deploy/local/kind-config.yaml
-# k3d: k3d cluster create sps --agents 1 -p "8080:80@loadbalancer"
-```
-
-### Build + load
+1. Enable Kubernetes + Traefik; container engine **dockerd (moby)**.
+2. kubectl context: `rancher-desktop`.
+3. Build + apply:
 
 ```bash
 docker build -f api/Dockerfile -t sps-crm-api:local ./api
-docker build -f web/Dockerfile -t sps-crm-web:local .   # repo root
-kind load docker-image sps-crm-api:local sps-crm-web:local --name sps
-# k3d: k3d image import sps-crm-api:local sps-crm-web:local -c sps
-```
-
-### Apply
-
-```bash
+docker build -f web/Dockerfile -t sps-crm-web:local .
 kubectl apply -k deploy/kustomize/overlays/local
-kubectl -n cms rollout status deploy/api deploy/web deploy/postgres
+kubectl -n cms rollout status deploy/postgres deploy/api deploy/web
 kubectl -n website rollout status deploy/website
 kubectl -n golf rollout status deploy/golf
-kubectl -n cms port-forward svc/web 8080:80
+```
+
+### How to open apps
+
+**Ingress hosts** (this PR — Traefik `ingressClassName: traefik`):
+
+- http://cms.localhost — login `admin@stpatrickshk.com` / `changeme`
+- http://website.localhost
+- http://golf.localhost
+
+If `*.localhost` on port 80 is refused, Traefik is exposed as NodePort — append Traefik’s HTTP nodePort:
+
+```bash
+kubectl -n kube-system get svc traefik -o jsonpath='{.spec.ports[?(@.port==80)].nodePort}{"\n"}'
+# e.g. http://cms.localhost:<nodePort>  and http://golf.localhost:<nodePort>
+```
+
+**Service NodePorts** (already published on Skellig without Ingress):
+
+- CMS web: http://localhost:30390
+- website: http://localhost:31297
+- golf: **http://localhost:32693**
+
+In Rancher UI: Cluster Explorer → namespaces `cms` / `website` / `golf` → Services / Ingress.
+
+API image must include `GET /ready` (current `main`). Local Postgres has no `ssl=require`.
+
+## Optional: kind / k3d
+
+```bash
+kind create cluster --name sps --config deploy/local/kind-config.yaml
+kind load docker-image sps-crm-api:local sps-crm-web:local --name sps
+kubectl apply -k deploy/kustomize/overlays/local
+kubectl -n cms port-forward svc/web 8080:80   # http://localhost:8080
 ```
 
 ## Tear down
 
 ```bash
-kind delete cluster --name sps
-# or: k3d cluster delete sps
+kubectl delete -k deploy/kustomize/overlays/local
 ```
