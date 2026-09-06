@@ -113,5 +113,6 @@ struct DealsListView: View {
             }
         }
         .task { await model.load() }
+        .onAppear { Task { await model.load() } }
     }
 }
