@@ -110,6 +110,12 @@ final class ModelDecodingTests: XCTestCase {
         XCTAssertEqual(url.absoluteString, "http://localhost:8000/api/deals?stage=proposal")
     }
 
+    func testHeaderLogoURLMatchesWebCDN() {
+        let url = SPSBrandAssets.headerLogoURL.absoluteString
+        XCTAssertTrue(url.contains("static.wixstatic.com"))
+        XCTAssertTrue(url.contains("stpatslogo.png"))
+    }
+
     func testParseFastAPIDetail() {
         let data = #"{"detail":"Incorrect email or password"}"#.data(using: .utf8)!
         XCTAssertEqual(APIClient.parseDetail(data, status: 401), "Incorrect email or password")

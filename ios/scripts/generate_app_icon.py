@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Write a 1024×1024 AppIcon.png (brand green + shamrock + SPS)."""
+"""Write a 1024×1024 AppIcon.png matching web favicon (ink + orange shamrock)."""
 
 from __future__ import annotations
 
@@ -10,9 +10,9 @@ from pathlib import Path
 
 OUT = Path(__file__).resolve().parents[1] / "SPSCRM/Assets.xcassets/AppIcon.appiconset/AppIcon.png"
 SIZE = 1024
-GREEN = (0x02, 0x5C, 0x23, 255)
+INK = (0x11, 0x11, 0x11, 255)
 ORANGE = (0xF5, 0x84, 0x26, 255)
-CREAM = (0xFF, 0xFD, 0xF8, 255)
+GREEN = (0x02, 0x5C, 0x23, 255)
 
 
 def blend(dst, src):
@@ -55,28 +55,18 @@ def write_png(path: Path, pixels: list[list[tuple[int, int, int, int]]]) -> None
 
 
 def main() -> None:
-    px = [[GREEN for _ in range(SIZE)] for _ in range(SIZE)]
+    px = [[INK for _ in range(SIZE)] for _ in range(SIZE)]
     cx = cy = SIZE / 2
     leaf_r = 150
     disk(px, cx, cy - 175, leaf_r, ORANGE)
     disk(px, cx - 155, cy + 55, leaf_r, ORANGE)
     disk(px, cx + 155, cy + 55, leaf_r, ORANGE)
-    disk(px, cx, cy + 20, 70, GREEN)
-    # stem
     for y in range(int(cy + 80), int(cy + 310)):
         t = (y - (cy + 80)) / 230
         xmid = cx + 18 * t
-        for x in range(int(xmid - 18), int(xmid + 19)):
+        for x in range(int(xmid - 16), int(xmid + 17)):
             if 0 <= x < SIZE:
-                px[y][x] = ORANGE
-    # cream ring
-    for y in range(SIZE):
-        for x in range(SIZE):
-            d = math.hypot(x - cx, y - cy)
-            if d > 470:
                 px[y][x] = GREEN
-            elif d > 455:
-                px[y][x] = CREAM
     OUT.parent.mkdir(parents=True, exist_ok=True)
     write_png(OUT, px)
     print("Wrote", OUT, OUT.stat().st_size, "bytes")

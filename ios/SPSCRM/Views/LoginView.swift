@@ -11,7 +11,6 @@ struct LoginView: View {
 
         ScrollView {
             VStack(spacing: 24) {
-                header
                 formCard
                 Button {
                     showAPISettings.toggle()
@@ -50,91 +49,79 @@ struct LoginView: View {
         .background(SPSTheme.cream.ignoresSafeArea())
     }
 
-    private var header: some View {
-        VStack(spacing: 10) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(SPSTheme.primary)
-                    .frame(width: 72, height: 72)
-                ShamrockMark(size: 36, color: SPSTheme.orange)
-            }
-            Text(SPSTheme.societyName.uppercased())
-                .font(.caption.weight(.semibold))
-                .tracking(1.4)
-                .foregroundStyle(SPSTheme.orange)
-            Text(SPSTheme.appName)
-                .font(.largeTitle.bold())
-                .foregroundStyle(SPSTheme.primary)
-            Text("Members and deals companion")
-                .font(.subheadline)
-                .foregroundStyle(SPSTheme.muted)
-        }
-        .padding(.top, 24)
-    }
-
     private var formCard: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Text("Sign in")
-                .font(.title2.bold())
-                .foregroundStyle(SPSTheme.ink)
-            Text("Use the same account as the web CRM.")
-                .font(.subheadline)
-                .foregroundStyle(SPSTheme.muted)
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Email")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(SPSTheme.ink)
-                TextField("Email", text: $email)
-                    .textContentType(.username)
-                    .keyboardType(.emailAddress)
-                    .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
-                    .padding(12)
-                    .background(SPSTheme.cream)
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-            }
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("Password")
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(SPSTheme.ink)
-                SecureField("Password", text: $password)
-                    .textContentType(.password)
-                    .padding(12)
-                    .background(SPSTheme.cream)
-                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-            }
-
-            if let error = auth.errorMessage {
-                ErrorBanner(message: error)
-            }
-
-            Button {
-                Task { await auth.login(email: email, password: password) }
-            } label: {
-                Group {
-                    if auth.isSubmitting {
-                        ProgressView()
-                            .tint(.white)
-                    } else {
-                        Text("Sign in")
-                            .fontWeight(.semibold)
-                    }
+        VStack(alignment: .leading, spacing: 0) {
+            SPSBrandLockup(style: .favicon)
+                .padding(20)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.white)
+                .overlay(alignment: .bottom) {
+                    Divider().background(SPSTheme.border)
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-            }
-            .buttonStyle(.borderedProminent)
-            .tint(SPSTheme.primary)
-            .disabled(auth.isSubmitting || email.isEmpty || password.isEmpty)
 
-            Text("Local seed: admin@stpatrickshk.com / changeme")
-                .font(.caption)
-                .foregroundStyle(SPSTheme.muted)
-                .frame(maxWidth: .infinity)
+            VStack(alignment: .leading, spacing: 16) {
+                Text("Sign in")
+                    .font(.title2.bold())
+                    .foregroundStyle(SPSTheme.ink)
+                Text("Manage members, sponsors, companies, and deals.")
+                    .font(.subheadline)
+                    .foregroundStyle(SPSTheme.muted)
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Email")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(SPSTheme.ink)
+                    TextField("Email", text: $email)
+                        .textContentType(.username)
+                        .keyboardType(.emailAddress)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .padding(12)
+                        .background(SPSTheme.cream)
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                }
+
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Password")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(SPSTheme.ink)
+                    SecureField("Password", text: $password)
+                        .textContentType(.password)
+                        .padding(12)
+                        .background(SPSTheme.cream)
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                }
+
+                if let error = auth.errorMessage {
+                    ErrorBanner(message: error)
+                }
+
+                Button {
+                    Task { await auth.login(email: email, password: password) }
+                } label: {
+                    Group {
+                        if auth.isSubmitting {
+                            ProgressView()
+                                .tint(.white)
+                        } else {
+                            Text("Sign in")
+                                .fontWeight(.semibold)
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(SPSTheme.primary)
+                .disabled(auth.isSubmitting || email.isEmpty || password.isEmpty)
+
+                Text("Local seed: admin@stpatrickshk.com / changeme")
+                    .font(.caption)
+                    .foregroundStyle(SPSTheme.muted)
+                    .frame(maxWidth: .infinity)
+            }
+            .padding(20)
         }
-        .padding(20)
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(

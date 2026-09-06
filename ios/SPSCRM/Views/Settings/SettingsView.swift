@@ -9,6 +9,12 @@ struct SettingsView: View {
 
         Form {
             Section {
+                SPSBrandLockup(style: .header, compact: true)
+                    .listRowInsets(EdgeInsets(top: 12, leading: 16, bottom: 12, trailing: 16))
+                    .listRowBackground(Color.white)
+            }
+
+            Section {
                 if let user = auth.user {
                     LabeledContent("Name", value: user.fullName)
                     LabeledContent("Email", value: user.email)

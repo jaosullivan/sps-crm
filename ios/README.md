@@ -111,14 +111,17 @@ ios/
 
 ## Brand
 
-Tokens match the web Frontend (`web/tailwind.config.js`):
+Tokens match `web/tailwind.config.js` (`07afe90`):
 
 | Token | Hex |
 |-------|-----|
 | Primary green | `#025C23` |
-| Orange | `#F58426` |
+| Orange / gold | `#F58426` |
 | Sage | `#81AD8E` |
 | Cream | `#FFFDF8` |
+| Ink | `#111111` |
+
+Login uses the favicon tile (black + orange shamrock). Home / More use the same Wix CDN header logo as web `AppLayout` (`fc654b7`), with a vendored PNG fallback.
 
 ## Out of scope
 

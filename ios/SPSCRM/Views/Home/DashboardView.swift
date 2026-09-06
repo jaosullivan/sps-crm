@@ -22,6 +22,15 @@ struct DashboardView: View {
     private func content(_ model: DashboardViewModel) -> some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
+                SPSBrandLockup(style: .header, compact: true)
+                    .padding(12)
+                    .background(Color.white)
+                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .stroke(SPSTheme.border, lineWidth: 1)
+                    )
+
                 Text("Overview of St. Patrick's Society HK CRM.")
                     .font(.subheadline)
                     .foregroundStyle(SPSTheme.muted)

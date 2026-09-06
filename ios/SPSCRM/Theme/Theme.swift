@@ -1,14 +1,15 @@
 import SwiftUI
 
 enum SPSTheme {
-    /// Brand tokens from the web Frontend (`web/tailwind.config.js` / stpatrickshk.com).
-    static let primary = Color(hex: 0x025C23)
-    static let primaryDark = Color(hex: 0x014A1C)
-    static let bodyGreen = Color(hex: 0x418458)
-    static let sage = Color(hex: 0x81AD8E)
-    static let pale = Color(hex: 0xC0D5C3)
-    static let greenLight = Color(hex: 0xE8F3EB)
+    /// Tokens copied from `web/tailwind.config.js` (`theme.extend.colors.sps`).
+    static let primary = Color(hex: 0x025C23) // green
+    static let primaryDark = Color(hex: 0x014A1C) // green-dark
+    static let bodyGreen = Color(hex: 0x418458) // green-body
+    static let sage = Color(hex: 0x81AD8E) // green-sage
+    static let pale = Color(hex: 0xC0D5C3) // green-pale
+    static let greenLight = Color(hex: 0xE8F3EB) // green-light
     static let orange = Color(hex: 0xF58426)
+    static let gold = orange // web alias: gold === orange
     static let cream = Color(hex: 0xFFFDF8)
     static let ink = Color(hex: 0x111111)
     static let muted = Color(hex: 0x6B7280)
@@ -16,8 +17,8 @@ enum SPSTheme {
     static let card = Color.white
     static let danger = Color(hex: 0xDC2626)
 
-    static let societyName = "St. Patrick's Society HK"
-    static let appName = "SPS CRM"
+    static let societyName = SPSBrandAssets.societyEyebrow
+    static let appName = SPSBrandAssets.productName
 }
 
 extension Color {
