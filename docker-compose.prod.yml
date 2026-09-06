@@ -1,0 +1,26 @@
+# Production overlay for single-host deploy.
+# Usage:
+#   cp .env.production.example .env   # fill strong secrets
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+#
+# Requires Docker Compose v2.24+ for `!override` (ports).
+
+services:
+  db:
+    ports: !override []
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:?set POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:?set POSTGRES_DB}
+
+  api:
+    ports: !override
+      - "127.0.0.1:8000:8000"
+    environment:
+      APP_ENV: production
+      DATABASE_URL: ${DATABASE_URL:?set DATABASE_URL}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+      CORS_ORIGINS: ${CORS_ORIGINS:?set CORS_ORIGINS}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?set ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD}
+      ADMIN_FULL_NAME: ${ADMIN_FULL_NAME:-SPS Admin}
