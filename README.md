@@ -16,7 +16,7 @@ docker compose up --build -d
 - API: http://localhost:8000
 - OpenAPI: http://localhost:8000/docs
 - Health: http://localhost:8000/health
-- Seeded admin: `admin@stpatrickshk.com` / `changeme` (override via `ADMIN_EMAIL` / `ADMIN_PASSWORD`)
+- Seeded admin (local only): `admin@stpatrickshk.com` / `changeme` (override via `ADMIN_EMAIL` / `ADMIN_PASSWORD`)
 
 Compose brings up `db` (Postgres 16) and `api`. Tables + seed run on API startup.
 
@@ -63,14 +63,25 @@ API contract: [`api/API_CONTRACT.md`](api/API_CONTRACT.md)
 
 Root `.env.example` is for Compose. Key vars:
 
+- `APP_ENV` — `development` (default) allows local placeholders; set `production` / `staging` to enforce strong secrets
 - `DATABASE_URL` — async Postgres URL (`@db` in Compose, `@localhost` for host runs)
-- `JWT_SECRET`
+- `JWT_SECRET` — signing key for access tokens
 - `CORS_ORIGINS` — comma-separated
 - `ADMIN_EMAIL` / `ADMIN_PASSWORD` / `ADMIN_FULL_NAME`
 
 Frontend (`web/.env.example`):
 
 - `VITE_API_BASE_URL` — default `http://localhost:8000`
+
+### Rotate on deploy
+
+Before any non-local deploy:
+
+1. Set `APP_ENV=production` (API will refuse weak defaults).
+2. Generate a fresh `JWT_SECRET` (≥32 chars), e.g. `openssl rand -hex 32`.
+3. Set a unique strong `ADMIN_PASSWORD` (not `changeme`).
+4. Keep values only in the host secret store / `.env` — never commit them.
+5. Rotating `JWT_SECRET` invalidates all outstanding JWTs; rotating the admin password does not rewrite an already-seeded user hash — update the DB user or re-seed deliberately.
 
 ## CI
 
@@ -83,4 +94,5 @@ On push/PR to `main`:
 ## Ops notes
 
 - Healthchecks: Postgres `pg_isready`; API `GET /health`
-- Do not commit `.env` (gitignored). Rotate `JWT_SECRET` and admin password before any real deploy.
+- Do not commit `.env` (gitignored)
+- See [`api/API_CONTRACT.md`](api/API_CONTRACT.md) § Security / deploy hygiene

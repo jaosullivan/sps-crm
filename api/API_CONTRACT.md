@@ -13,7 +13,18 @@ Health: `GET /health` (no auth)
 | POST | `/api/auth/login` | `{ "email", "password" }` | `{ "access_token", "token_type": "bearer", "user" }` |
 | GET | `/api/auth/me` | — | `UserOut` |
 
-Seeded admin (override via env): `ADMIN_EMAIL` / `ADMIN_PASSWORD` (defaults `admin@stpatrickshk.com` / `changeme`).
+Seeded admin (override via env): `ADMIN_EMAIL` / `ADMIN_PASSWORD`.
+
+Local defaults (`APP_ENV=development` only): `admin@stpatrickshk.com` / `changeme`.
+
+## Security / deploy hygiene
+
+- Set `APP_ENV=production` (or `prod` / `staging`) for any shared or public host.
+- In those profiles the API **refuses to start** unless:
+  - `JWT_SECRET` is at least 32 characters and not a known placeholder (`change-me-in-production`, `changeme`, `secret`, …)
+  - `ADMIN_PASSWORD` is set and not a weak default (`changeme`, `password`, `admin`, …)
+- **Rotate on every deploy:** generate a new `JWT_SECRET` (invalidates existing JWTs) and a new admin password; store only in the host secret store / `.env` (never git).
+- Example: `openssl rand -hex 32`
 
 ## Resources (all require JWT)
 
