@@ -12,6 +12,7 @@ import type { DashboardStats, DealStage } from '@/types'
 import { DEAL_STAGES } from '@/types'
 import { PageHeader } from '@/components/PageHeader'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { EmptyState } from '@/components/EmptyState'
 
 export function DashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null)
@@ -76,12 +77,23 @@ export function DashboardPage() {
         title="Dashboard"
         description="Overview of St. Patrick's Society HK CRM."
       />
-      {loading ? <p className="text-sm text-sps-muted">Loading stats…</p> : null}
+      {loading ? <p className="text-sm text-sps-muted">Loading stats...</p> : null}
       {error ? (
         <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
       ) : null}
       {stats ? (
         <>
+          {stats.members_total === 0 &&
+          stats.sponsors_total === 0 &&
+          stats.companies_total === 0 &&
+          stats.deals_total === 0 ? (
+            <div className="mb-6 rounded-lg border border-sps-green-pale bg-white">
+              <EmptyState
+                title="Welcome to SPS CRM"
+                description="Your workspace is ready. Add members, sponsors, companies, or deals to see activity here."
+              />
+            </div>
+          ) : null}
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {cards.map(({ label, value, sub, to, icon: Icon }) => (
               <Link key={label} to={to}>
