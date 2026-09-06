@@ -4,7 +4,13 @@ Base URL: `http://localhost:8000`
 Prefix: `/api`  
 Auth: `Authorization: Bearer <access_token>`  
 OpenAPI: `/docs`, `/openapi.json`  
-Health: `GET /health` (no auth)
+
+## Probes (no auth)
+
+| Path | Use | Behavior |
+|------|-----|----------|
+| `GET /health` | K8s **liveness** | Process up; no DB check |
+| `GET /ready` | K8s **readiness** | `SELECT 1` against Postgres; `503` if DB unreachable |
 
 ## Auth
 
@@ -25,6 +31,25 @@ Local defaults (`APP_ENV=development` only): `admin@stpatrickshk.com` / `changem
   - `ADMIN_PASSWORD` is set and not a weak default (`changeme`, `password`, `admin`, …)
 - **Rotate on every deploy:** generate a new `JWT_SECRET` (invalidates existing JWTs) and a new admin password; store only in the host secret store / `.env` (never git).
 - Example: `openssl rand -hex 32`
+
+## EKS / RDS / CORS (KAN-8)
+
+**`DATABASE_URL` (async SQLAlchemy + asyncpg):**
+
+```text
+postgresql+asyncpg://USER:PASSWORD@HOST:5432/DBNAME?ssl=require
+```
+
+- Use the RDS endpoint as `HOST` (not in-cluster Postgres).
+- URL-encode special characters in the password.
+- Prefer `ssl=require` (or RDS CA bundle via `ssl` connect args) for AWS.
+
+**CORS / same-origin nginx:**
+
+- Preferred: ALB → nginx serves `web/dist` and proxies `/api` → API. Browser calls are same-origin; set `CORS_ORIGINS` to the public HTTPS origin anyway (e.g. `https://crm.example.com`) so direct API hits and future split origins stay safe.
+- If web is on a different origin (S3+CloudFront), set `CORS_ORIGINS` to that exact HTTPS origin (comma-separated if several). Do not use `*` with credentials.
+
+**Secrets (Secrets Manager / External Secrets):** `JWT_SECRET`, `ADMIN_PASSWORD`, `DATABASE_URL`, `CORS_ORIGINS`, `APP_ENV=production`.
 
 ## Resources (all require JWT)
 
@@ -81,4 +106,5 @@ Filter: `GET /api/deals?stage=proposal`
 
 - Prefer JSON login (`POST /api/auth/login`) over form token URL.
 - Money fields are decimals (JSON number/string); treat as HKD.
-- CORS defaults allow Vite `http://localhost:5173`.
+- Local CORS defaults allow Vite `http://localhost:5173`.
+- Prod same-origin: relative `/api/...` is fine; see EKS / CORS above.
