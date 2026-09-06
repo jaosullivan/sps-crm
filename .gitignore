@@ -11,6 +11,10 @@ venv/
 .ruff_cache/
 .DS_Store
 node_modules/
+ios/**/xcuserdata/
+ios/**/DerivedData/
+ios/.swiftpm/
+*.xcuserstate
 dist/
 *.log
 .coverage

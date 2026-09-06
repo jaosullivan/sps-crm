@@ -41,12 +41,25 @@ cd web && npm install && VITE_API_BASE_URL=http://localhost:8000 npm run dev
 - API base: `VITE_API_BASE_URL=http://localhost:8000` (see `web/.env.example`)
 - CORS already allows Vite on `:5173`
 
+### 3. iOS companion (KAN-7)
+
+On a Mac with Xcode 15+:
+
+```bash
+open ios/SPSCRM.xcodeproj
+```
+
+Keep Compose running. In the Simulator, `http://localhost:8000` reaches the API. Seeded admin: `admin@stpatrickshk.com` / `changeme`.
+
+Full Simulator / device / ATS notes: [`ios/README.md`](ios/README.md).
+
 ### MVP check
 
 1. `docker compose up --build -d`
 2. `cd web && npm install && VITE_API_BASE_URL=http://localhost:8000 npm run dev`
 3. Open http://localhost:5173 and log in as `admin@stpatrickshk.com` / `changeme`
 4. Manage members, sponsors, companies, and deals
+5. Optional: open `ios/SPSCRM.xcodeproj` and run the companion on an iPhone Simulator
 
 ## Single-host production (KAN-5)
 
