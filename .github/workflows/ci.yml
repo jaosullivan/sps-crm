@@ -33,7 +33,6 @@ jobs:
   web:
     name: Web lint / build
     runs-on: ubuntu-latest
-    if: hashFiles('web/package.json') != ''
     defaults:
       run:
         working-directory: web
@@ -43,7 +42,7 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: web/package-lock.json
+          cache-dependency-path: web/package.json
       - name: Install
         run: |
           if [ -f package-lock.json ]; then npm ci; else npm install; fi
