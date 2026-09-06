@@ -5,12 +5,16 @@ export default {
     extend: {
       colors: {
         sps: {
-          green: '#0B6E4F',
-          'green-dark': '#085A40',
-          'green-light': '#E8F5F0',
-          gold: '#C4A35A',
-          cream: '#F7F5F0',
-          ink: '#1A1A1A',
+          green: '#025C23',
+          'green-dark': '#014a1c',
+          'green-body': '#418458',
+          'green-sage': '#81AD8E',
+          'green-pale': '#C0D5C3',
+          'green-light': '#E8F3EB',
+          orange: '#F58426',
+          gold: '#F58426',
+          cream: '#FFFDF8',
+          ink: '#111111',
           muted: '#6B7280',
           border: '#E5E7EB',
         },

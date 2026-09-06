@@ -38,12 +38,24 @@ export function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-sps-cream px-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md overflow-hidden shadow-sm">
+        <div className="border-b border-sps-border bg-white px-6 py-5">
+          <div className="flex items-center gap-3">
+            <img
+              src="/sphk-logo.svg"
+              alt="SPS Hong Kong logo"
+              className="h-14 w-14 rounded-md bg-black object-contain"
+            />
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-sps-orange">
+                St. Patrick&apos;s Society HK
+              </p>
+              <p className="text-lg font-semibold tracking-wide text-sps-green">SPS CRM</p>
+            </div>
+          </div>
+        </div>
         <CardHeader>
-          <p className="text-xs font-semibold uppercase tracking-wider text-sps-gold">
-            St. Patrick&apos;s Society HK
-          </p>
-          <CardTitle>Sign in to SPS CRM</CardTitle>
+          <CardTitle>Sign in</CardTitle>
           <CardDescription>
             Manage members, sponsors, companies, and deals.
           </CardDescription>
@@ -76,7 +88,7 @@ export function LoginPage() {
               <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
             ) : null}
             <Button type="submit" className="w-full" disabled={submitting}>
-              {submitting ? 'Signing in…' : 'Sign in'}
+              {submitting ? 'Signing in...' : 'Sign in'}
             </Button>
             <p className="text-center text-xs text-sps-muted">
               Default: admin@stpatrickshk.com / changeme

@@ -31,12 +31,22 @@ export function AppLayout() {
   return (
     <div className="flex min-h-screen">
       <aside className="flex w-60 flex-col border-r border-sps-border bg-white">
-        <div className="border-b border-sps-border px-5 py-5">
-          <div className="text-xs font-semibold uppercase tracking-wider text-sps-gold">
-            St. Patrick&apos;s Society
+        <div className="border-b border-sps-border px-4 py-4">
+          <div className="flex items-center gap-3">
+            <img
+              src="/sphk-logo-header.svg"
+              alt="St. Patrick's Society Hong Kong"
+              className="h-10 w-auto rounded-sm bg-black object-contain"
+            />
+            <div className="min-w-0">
+              <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-sps-orange">
+                St. Patrick&apos;s Society HK
+              </div>
+              <div className="truncate text-base font-semibold tracking-wide text-sps-green">
+                SPS CRM
+              </div>
+            </div>
           </div>
-          <div className="mt-0.5 text-lg font-semibold text-sps-green">SPS CRM</div>
-          <p className="mt-1 text-xs text-sps-muted">Hong Kong</p>
         </div>
         <nav className="flex flex-1 flex-col gap-1 p-3">
           {nav.map(({ to, label, icon: Icon, end }) => (
@@ -69,7 +79,7 @@ export function AppLayout() {
           </Button>
         </div>
       </aside>
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto bg-sps-cream">
         <div className="mx-auto max-w-6xl px-6 py-8">
           <Outlet />
         </div>
