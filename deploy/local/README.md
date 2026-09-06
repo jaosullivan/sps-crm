@@ -10,50 +10,52 @@ Run SPS CRM on a local cluster **before** any EKS apply. Three namespaces:
 
 EKS Terraform under `../terraform/` stays for later — do not apply until AWS access is confirmed.
 
+## One-liner (kind + cms smoke)
+
+From repo root (after `web/Dockerfile` is on main):
+
+```bash
+kind create cluster --name sps --config deploy/local/kind-config.yaml \
+  && docker build -f api/Dockerfile -t sps-crm-api:local ./api \
+  && docker build -f web/Dockerfile -t sps-crm-web:local . \
+  && kind load docker-image sps-crm-api:local sps-crm-web:local --name sps \
+  && kubectl apply -k deploy/kustomize/overlays/local \
+  && kubectl -n cms rollout status deploy/postgres deploy/api deploy/web \
+  && kubectl -n cms port-forward svc/web 8080:80
+```
+
+Then open http://localhost:8080 — login `admin@stpatrickshk.com` / `changeme`. Probes: `/health` + `/ready`. Local Postgres has no `ssl=require` (RDS-only later).
+
+`website` / `golf` stay nginx placeholders.
+
 ## Prerequisites
 
-- Docker
-- [kind](https://kind.sigs.k8s.io/) **or** [k3d](https://k3d.io/)
-- `kubectl`
-- Optional: build `web/Dockerfile` from @Frontend Dev (falls back to `nginx:alpine` placeholder if missing)
+- Docker, kind (or k3d), kubectl
 
-## kind
+## kind / k3d (stepwise)
 
 ```bash
 kind create cluster --name sps --config deploy/local/kind-config.yaml
-# load images into the nodes after build:
-#   kind load docker-image sps-crm-api:local sps-crm-web:local --name sps
+# k3d: k3d cluster create sps --agents 1 -p "8080:80@loadbalancer"
 ```
 
-## k3d
+### Build + load
 
 ```bash
-k3d cluster create sps --agents 1 -p "8080:80@loadbalancer"
-# k3d image import sps-crm-api:local sps-crm-web:local -c sps
+docker build -f api/Dockerfile -t sps-crm-api:local ./api
+docker build -f web/Dockerfile -t sps-crm-web:local .   # repo root
+kind load docker-image sps-crm-api:local sps-crm-web:local --name sps
+# k3d: k3d image import sps-crm-api:local sps-crm-web:local -c sps
 ```
 
-## Build images
-
-```bash
-docker build -t sps-crm-api:local ./api
-docker build -t sps-crm-web:local ./web   # needs web/Dockerfile
-```
-
-## Apply
+### Apply
 
 ```bash
 kubectl apply -k deploy/kustomize/overlays/local
 kubectl -n cms rollout status deploy/api deploy/web deploy/postgres
 kubectl -n website rollout status deploy/website
 kubectl -n golf rollout status deploy/golf
-```
-
-Port-forward CRM:
-
-```bash
 kubectl -n cms port-forward svc/web 8080:80
-# open http://localhost:8080  (API via same-origin /api)
-# seed admin: admin@stpatrickshk.com / changeme (APP_ENV=development)
 ```
 
 ## Tear down
