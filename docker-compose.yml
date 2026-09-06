@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-sps}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sps}
+      POSTGRES_DB: ${POSTGRES_DB:-sps_crm}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sps -d sps_crm"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: ./api
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql+asyncpg://sps:sps@db:5432/sps_crm}
+      JWT_SECRET: ${JWT_SECRET:-change-me-in-production}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@stpatrickshk.com}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-changeme}
+      ADMIN_FULL_NAME: ${ADMIN_FULL_NAME:-SPS Admin}
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 25s
+
+volumes:
+  pgdata:
