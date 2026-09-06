@@ -2,76 +2,61 @@
 
 Prefer **Rancher Desktop** (local k3s + Traefik + UI). kind/k3d remain optional fallbacks.
 
-Namespaces:
+Namespaces / URLs (Traefik is **NodePort** on this Skellig RD install — include the HTTP nodePort):
+
+```bash
+kubectl -n kube-system get svc traefik -o jsonpath='{.spec.ports[?(@.port==80)].nodePort}{"\n"}'
+# example on Skellig today: 31975
+```
 
 | Namespace | Role | URL |
 |-----------|------|-----|
-| `cms` | CRM API + web + Postgres | **http://cms.localhost** |
-| `website` | Placeholder | **http://website.localhost** |
-| `golf` | Placeholder | **http://golf.localhost** |
+| `cms` | CRM API + web + Postgres | **http://cms.localhost:&lt;nodePort&gt;** |
+| `website` | Placeholder | **http://website.localhost:&lt;nodePort&gt;** |
+| `golf` | Placeholder | **http://golf.localhost:&lt;nodePort&gt;** |
 
-Image tags stay `sps-crm-api:local` and `sps-crm-web:local`. EKS Terraform stays parked.
+Example: http://golf.localhost:31975 · http://cms.localhost:31975
+
+Image tags: `sps-crm-api:local`, `sps-crm-web:local`. EKS Terraform stays parked.
 
 ## Rancher Desktop (preferred)
 
-1. Install [Rancher Desktop](https://rancherdesktop.io/), enable **Kubernetes**, keep default **Traefik** ingress.
-2. In Preferences → Container Engine, **dockerd (moby)** is easiest so `docker build` images are visible to the cluster. With containerd, import via `nerdctl -n k8s.io`.
-3. Point kubectl at RD: `rdctl shell` / UI → Kubernetes context `rancher-desktop`.
+1. Enable **Kubernetes** + default **Traefik**.
+2. Container Engine **dockerd (moby)** so `docker build` images are cluster-visible.
+3. kubectl context: `rancher-desktop`.
 
-### Build images
+### Build + apply
 
 ```bash
-# from repo root
 docker build -f api/Dockerfile -t sps-crm-api:local ./api
 docker build -f web/Dockerfile -t sps-crm-web:local .
-```
-
-### Apply
-
-```bash
 kubectl apply -k deploy/kustomize/overlays/local
 kubectl -n cms rollout status deploy/postgres deploy/api deploy/web
 kubectl -n website rollout status deploy/website
 kubectl -n golf rollout status deploy/golf
 ```
 
-### Open in the browser (no port-forward)
+Use an API image that includes `GET /ready` (current `main`). Login: `admin@stpatrickshk.com` / `changeme`.
 
-Traefik Ingress hosts (see `ingress.yaml`):
+Rancher UI: Cluster Explorer → namespaces `cms` / `website` / `golf`.
 
-- CRM: http://cms.localhost — login `admin@stpatrickshk.com` / `changeme`
-- Website placeholder: http://website.localhost
-- Golf placeholder: **http://golf.localhost**
-
-In Rancher Desktop UI: **Cluster Explorer** → Workloads / Services / Ingress → namespaces `cms`, `website`, `golf`.
-
-Probes: `/health` + `/ready`. Local Postgres has no `ssl=require`.
-
-### One-liner (Rancher Desktop already running)
+### One-liner
 
 ```bash
+NP=$(kubectl -n kube-system get svc traefik -o jsonpath='{.spec.ports[?(@.port==80)].nodePort}')
 docker build -f api/Dockerfile -t sps-crm-api:local ./api \
   && docker build -f web/Dockerfile -t sps-crm-web:local . \
   && kubectl apply -k deploy/kustomize/overlays/local \
   && kubectl -n cms rollout status deploy/postgres deploy/api deploy/web \
-  && echo "Open http://cms.localhost  (golf: http://golf.localhost)"
+  && echo "CMS http://cms.localhost:${NP}  golf http://golf.localhost:${NP}"
 ```
 
-## Optional: kind / k3d fallback
+## Optional: kind / k3d
 
-```bash
-kind create cluster --name sps --config deploy/local/kind-config.yaml
-kind load docker-image sps-crm-api:local sps-crm-web:local --name sps
-kubectl apply -k deploy/kustomize/overlays/local
-# Traefik hosts may not exist on kind — use:
-kubectl -n cms port-forward svc/web 8080:80   # http://localhost:8080
-```
-
-k3d: `k3d cluster create sps --agents 1 -p "8080:80@loadbalancer"` then `k3d image import …`.
+See older notes — use `kind load` / `k3d image import` + port-forward `svc/web 8080:80` if Traefik hosts are unavailable.
 
 ## Tear down
 
 ```bash
 kubectl delete -k deploy/kustomize/overlays/local
-# or reset Kubernetes from Rancher Desktop Preferences
 ```
