@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+
+images:
+  - name: sps-crm/api
+    newName: ACCOUNT.dkr.ecr.ap-southeast-1.amazonaws.com/sps-crm/api
+    newTag: latest # pin digests in real deploys
+  - name: sps-crm/web
+    newName: ACCOUNT.dkr.ecr.ap-southeast-1.amazonaws.com/sps-crm/web
+    newTag: latest
+
+patches:
+  - target:
+      kind: Ingress
+      name: sps-crm
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: crm.example.com
