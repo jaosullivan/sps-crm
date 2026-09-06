@@ -12,6 +12,7 @@ import { Label } from '@/components/ui/label'
 import { Select } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent } from '@/components/ui/card'
+import { EmptyState } from '@/components/EmptyState'
 
 const emptyForm: DealCreate = {
   title: '',
@@ -91,7 +92,7 @@ export function DealsPage() {
   }, [load])
 
   const companyName = (id?: number | null) =>
-    id ? companies.find((c) => c.id === id)?.name || `#${id}` : '—'
+    id ? companies.find((c) => c.id === id)?.name || `#${id}` : '-'
 
   const openCreate = () => {
     setEditing(null)
@@ -147,7 +148,7 @@ export function DealsPage() {
 
       <div className="mb-4 flex flex-wrap gap-2">
         <Input
-          placeholder="Search deals…"
+          placeholder="Search deals..."
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => {
@@ -197,13 +198,22 @@ export function DealsPage() {
               {loading ? (
                 <tr>
                   <td colSpan={6} className="px-4 py-8 text-center text-sps-muted">
-                    Loading…
+                    Loading...
                   </td>
                 </tr>
               ) : items.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-sps-muted">
-                    No deals found.
+                  <td colSpan={6} className="p-0">
+                    <EmptyState
+                      title="No deals yet"
+                      description="Start a pipeline deal for sponsorships or partnerships."
+                      action={
+                        <Button onClick={openCreate}>
+                          <Plus className="h-4 w-4" />
+                          Add deal
+                        </Button>
+                      }
+                    />
                   </td>
                 </tr>
               ) : (
@@ -242,7 +252,7 @@ export function DealsPage() {
               Cancel
             </Button>
             <Button type="submit" form="deal-form" disabled={saving}>
-              {saving ? 'Saving…' : 'Save'}
+              {saving ? 'Saving...' : 'Save'}
             </Button>
           </>
         }
