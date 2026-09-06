@@ -8,7 +8,7 @@ stringData:
   APP_ENV: development
   DATABASE_URL: postgresql+asyncpg://sps:sps@postgres:5432/sps_crm
   JWT_SECRET: change-me-in-production
-  CORS_ORIGINS: http://cms.localhost,http://localhost:8080,http://127.0.0.1:8080
+  CORS_ORIGINS: http://cms.localhost,http://cms.localhost:31975,http://localhost:8080,http://127.0.0.1:8080
   ADMIN_EMAIL: admin@stpatrickshk.com
   ADMIN_PASSWORD: changeme
   ADMIN_FULL_NAME: SPS Admin
