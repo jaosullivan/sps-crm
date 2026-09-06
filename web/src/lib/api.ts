@@ -21,9 +21,7 @@ import type {
 const TOKEN_KEY = 'sps_crm_token'
 const USER_KEY = 'sps_crm_user'
 
-const API_BASE =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, '') ||
-  'http://localhost:8000'
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000').replace(/\/$/, '')
 
 export class ApiError extends Error {
   status: number

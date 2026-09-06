@@ -14,7 +14,18 @@ App runs at http://localhost:5173
 
 ## Environment
 
-VITE_API_BASE_URL defaults to http://localhost:8000. See .env.example.
+- **Local Vite:** `VITE_API_BASE_URL` defaults to `http://localhost:8000` when unset (see `.env.example`).
+- **Production / Docker same-origin:** set `VITE_API_BASE_URL` to empty so API calls use relative `/api/...` (nginx proxies to the API).
+
+## Docker (production image)
+
+Build from the **repo root** (context = monorepo root):
+
+```bash
+docker build -f web/Dockerfile -t sps-crm/web:latest .
+```
+
+The image is multi-stage: Node 22 builds the SPA with empty `VITE_API_BASE_URL` by default, then nginx:1.27 serves `dist` and proxies `/api/` (and `/health`) to `http://api:8000`. K8s may override `default.conf` via ConfigMap; the image still ships `web/nginx.default.conf` for local `docker run`.
 
 ## Default login
 
