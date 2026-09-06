@@ -7,7 +7,7 @@
 
 | Path | Purpose |
 |------|--------|
-| [`local/`](local/) | kind/k3d quickstart |
+| [`local/`](local/) | kind/k3d quickstart + **one-liner** |
 | `kustomize/overlays/local/` | `cms` (API+web+Postgres), `website` + `golf` placeholder Deployments |
 | `kustomize/base` + `overlays/prod/` | EKS-oriented api/web + ALB + ExternalSecret |
 | `terraform/` | VPC, EKS Fargate, RDS, ECR, Secrets Manager, IRSA hooks |
@@ -16,19 +16,19 @@
 
 ## Local (do this first)
 
-See [`local/README.md`](local/README.md).
+Full notes: [`local/README.md`](local/README.md).
 
 ```bash
-kind create cluster --name sps --config deploy/local/kind-config.yaml
-docker build -t sps-crm-api:local ./api
-docker build -t sps-crm-web:local ./web
-kind load docker-image sps-crm-api:local sps-crm-web:local --name sps
-kubectl apply -k deploy/kustomize/overlays/local
-kubectl -n cms port-forward svc/web 8080:80
+kind create cluster --name sps --config deploy/local/kind-config.yaml \
+  && docker build -f api/Dockerfile -t sps-crm-api:local ./api \
+  && docker build -f web/Dockerfile -t sps-crm-web:local . \
+  && kind load docker-image sps-crm-api:local sps-crm-web:local --name sps \
+  && kubectl apply -k deploy/kustomize/overlays/local \
+  && kubectl -n cms port-forward svc/web 8080:80
 ```
 
 - `cms` — CRM stack (liveness `/health`, readiness `/ready`, same-origin `/api`)
-- `website` / `golf` — nginx placeholder Deployments for those namespaces
+- `website` / `golf` — nginx placeholder Deployments
 
 ## EKS (later)
 
@@ -41,6 +41,7 @@ kubectl -n cms port-forward svc/web 8080:80
 - Liveness `GET /health` · Readiness `GET /ready`
 - RDS: `postgresql+asyncpg://USER:PASS@HOST:5432/DB?ssl=require`
 - `APP_ENV=production` + strong secrets; `CORS_ORIGINS` = public HTTPS origin
+- Local kind Postgres: no `ssl=require`
 
 ## CI (follow-up)
 
