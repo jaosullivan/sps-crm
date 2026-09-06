@@ -16,7 +16,7 @@ docker compose up --build -d
 - API: http://localhost:8000
 - OpenAPI: http://localhost:8000/docs
 - Health: http://localhost:8000/health
-- Seeded admin: `ADMIN_EMAIL` / `ADMIN_PASSWORD` from `.env` (defaults `admin@stpatrickshk.com` / `changeme`)
+- Seeded admin: `admin@stpatrickshk.com` / `changeme` (override via `ADMIN_EMAIL` / `ADMIN_PASSWORD`)
 
 Compose brings up `db` (Postgres 16) and `api`. Tables + seed run on API startup.
 
@@ -26,19 +26,27 @@ For local API without Compose, use `api/.env.example` (`DATABASE_URL` host `loca
 
 ```bash
 cd web
-cp .env.example .env   # if present
+cp .env.example .env
 npm install
 npm run dev
 ```
 
-App: http://localhost:5173 — CORS defaults allow that origin.
+Or one-liner (no `.env` file):
+
+```bash
+cd web && npm install && VITE_API_BASE_URL=http://localhost:8000 npm run dev
+```
+
+- App: http://localhost:5173
+- API base: `VITE_API_BASE_URL=http://localhost:8000` (see `web/.env.example`)
+- CORS already allows Vite on `:5173`
 
 ### MVP check
 
 1. `docker compose up --build -d`
-2. `cd web && npm install && npm run dev`
-3. Log in with seeded admin
-4. Manage members, sponsors, and deals
+2. `cd web && npm install && VITE_API_BASE_URL=http://localhost:8000 npm run dev`
+3. Open http://localhost:5173 and log in as `admin@stpatrickshk.com` / `changeme`
+4. Manage members, sponsors, companies, and deals
 
 ## Layout
 
@@ -59,6 +67,10 @@ Root `.env.example` is for Compose. Key vars:
 - `JWT_SECRET`
 - `CORS_ORIGINS` — comma-separated
 - `ADMIN_EMAIL` / `ADMIN_PASSWORD` / `ADMIN_FULL_NAME`
+
+Frontend (`web/.env.example`):
+
+- `VITE_API_BASE_URL` — default `http://localhost:8000`
 
 ## CI
 
