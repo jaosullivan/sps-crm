@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent } from '@/components/ui/card'
+import { EmptyState } from '@/components/EmptyState'
 
 const emptyForm: CompanyCreate = {
   name: '',
@@ -115,7 +116,7 @@ export function CompaniesPage() {
 
       <div className="mb-4 flex gap-2">
         <Input
-          placeholder="Search companies…"
+          placeholder="Search companies..."
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => {
@@ -147,20 +148,29 @@ export function CompaniesPage() {
               {loading ? (
                 <tr>
                   <td colSpan={4} className="px-4 py-8 text-center text-sps-muted">
-                    Loading…
+                    Loading...
                   </td>
                 </tr>
               ) : items.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="px-4 py-8 text-center text-sps-muted">
-                    No companies found.
+                  <td colSpan={4} className="p-0">
+                    <EmptyState
+                      title="No companies yet"
+                      description="Add organisations linked to sponsors and deals."
+                      action={
+                        <Button onClick={openCreate}>
+                          <Plus className="h-4 w-4" />
+                          Add company
+                        </Button>
+                      }
+                    />
                   </td>
                 </tr>
               ) : (
                 items.map((c) => (
                   <tr key={c.id} className="border-b border-sps-border last:border-0">
                     <td className="px-4 py-3 font-medium">{c.name}</td>
-                    <td className="px-4 py-3">{c.industry || '—'}</td>
+                    <td className="px-4 py-3">{c.industry || '-'}</td>
                     <td className="px-4 py-3 text-sps-muted">
                       {c.website ? (
                         <a
@@ -172,7 +182,7 @@ export function CompaniesPage() {
                           {c.website}
                         </a>
                       ) : (
-                        '—'
+                        '-'
                       )}
                     </td>
                     <td className="px-4 py-3">
@@ -203,7 +213,7 @@ export function CompaniesPage() {
               Cancel
             </Button>
             <Button type="submit" form="company-form" disabled={saving}>
-              {saving ? 'Saving…' : 'Save'}
+              {saving ? 'Saving...' : 'Save'}
             </Button>
           </>
         }
