@@ -1,0 +1,59 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sps-cms
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/jaosullivan/sps-crm
+    targetRevision: devops/kan-8-eks-scaffold
+    path: deploy/kustomize/apps/cms
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cms
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sps-website
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/jaosullivan/sps-crm
+    targetRevision: devops/kan-8-eks-scaffold
+    path: deploy/kustomize/apps/website
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: website
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sps-golf
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/jaosullivan/sps-crm
+    targetRevision: devops/kan-8-eks-scaffold
+    path: deploy/kustomize/apps/golf
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: golf
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
