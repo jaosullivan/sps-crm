@@ -12,23 +12,33 @@ enum SPSBrandAssets {
     static let productName = "SPS CRM"
 }
 
-/// Black rounded tile + orange shamrock — `web/public/favicon.svg`.
+/// Login mark — same treatment as web `img.favicon.svg` on `bg-black` (`fc654b7`).
 struct SPSFaviconMark: View {
     var size: CGFloat = 56
 
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: size * 0.19, style: .continuous)
-                .fill(SPSTheme.ink)
-            ShamrockShape()
-                .fill(SPSTheme.orange)
-                .padding(size * 0.16)
-            ShamrockStem()
-                .fill(SPSTheme.primary)
-                .padding(size * 0.16)
+        Group {
+            if UIImage(named: "SPSFavicon") != nil {
+                Image("SPSFavicon")
+                    .resizable()
+                    .scaledToFit()
+            } else {
+                ZStack {
+                    RoundedRectangle(cornerRadius: size * 0.19, style: .continuous)
+                        .fill(SPSTheme.ink)
+                    ShamrockShape()
+                        .fill(SPSTheme.orange)
+                        .padding(size * 0.16)
+                    ShamrockStem()
+                        .fill(SPSTheme.primary)
+                        .padding(size * 0.16)
+                }
+            }
         }
         .frame(width: size, height: size)
-        .accessibilityHidden(true)
+        .background(SPSTheme.ink)
+        .clipShape(RoundedRectangle(cornerRadius: size * 0.19, style: .continuous))
+        .accessibilityLabel("SPS Hong Kong logo")
     }
 }
 

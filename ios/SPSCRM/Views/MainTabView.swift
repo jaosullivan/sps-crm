@@ -2,6 +2,21 @@ import SwiftUI
 
 struct MainTabView: View {
     var body: some View {
+        VStack(spacing: 0) {
+            SPSBrandLockup(style: .header, compact: true)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 10)
+                .background(Color.white)
+                .overlay(alignment: .bottom) {
+                    Divider().background(SPSTheme.border)
+                }
+
+            tabRoot
+        }
+        .background(SPSTheme.cream.ignoresSafeArea())
+    }
+
+    private var tabRoot: some View {
         TabView {
             NavigationStack {
                 DashboardView()

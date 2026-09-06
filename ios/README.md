@@ -121,7 +121,7 @@ Tokens match `web/tailwind.config.js` (`07afe90`):
 | Cream | `#FFFDF8` |
 | Ink | `#111111` |
 
-Login uses the favicon tile (black + orange shamrock). Home / More use the same Wix CDN header logo as web `AppLayout` (`fc654b7`), with a vendored PNG fallback.
+Login uses the favicon tile (`web/public/favicon.svg` on black), matching web login. The signed-in chrome header uses the same Wix CDN logo URL as web `AppLayout` (`fc654b7`), with a vendored PNG fallback.
 
 ## Out of scope
 

@@ -111,9 +111,10 @@ final class ModelDecodingTests: XCTestCase {
     }
 
     func testHeaderLogoURLMatchesWebCDN() {
-        let url = SPSBrandAssets.headerLogoURL.absoluteString
-        XCTAssertTrue(url.contains("static.wixstatic.com"))
-        XCTAssertTrue(url.contains("stpatslogo.png"))
+        XCTAssertEqual(
+            SPSBrandAssets.headerLogoURL.absoluteString,
+            "https://static.wixstatic.com/media/ef9572_9049fdb0d6484286a126e71bad334748~mv2.png/v1/fill/w_378,h_194,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/stpatslogo.png"
+        )
     }
 
     func testParseFastAPIDetail() {
