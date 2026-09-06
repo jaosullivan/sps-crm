@@ -1,0 +1,57 @@
+# Traefik Ingress for Rancher Desktop (preferred over raw NodePorts).
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: cms
+  namespace: cms
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: cms.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: website
+  namespace: website
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: website.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: website
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: golf
+  namespace: golf
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: golf.localhost
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: golf
+                port:
+                  number: 80
