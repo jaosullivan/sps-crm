@@ -25,6 +25,12 @@ Build from the **repo root** (context = monorepo root):
 docker build -f web/Dockerfile -t sps-crm/web:latest .
 ```
 
+Kind / local tag (same Dockerfile, convenient image name for cluster load):
+
+```bash
+docker build -f web/Dockerfile -t sps-crm-web:local .
+```
+
 The image is multi-stage: Node 22 builds the SPA with empty `VITE_API_BASE_URL` by default, then nginx:1.27 serves `dist` and proxies `/api/` (and `/health`) to `http://api:8000`. K8s may override `default.conf` via ConfigMap; the image still ships `web/nginx.default.conf` for local `docker run`.
 
 ## Default login
