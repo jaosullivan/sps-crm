@@ -1,6 +1,7 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react'
 import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { api, ApiError } from '@/lib/api'
+import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { formatHkd } from '@/lib/utils'
 import type { Company, Sponsor, SponsorCreate, SponsorTier } from '@/types'
 import { SPONSOR_TIERS } from '@/types'
@@ -68,6 +69,7 @@ function cleanPayload(form: SponsorCreate): SponsorCreate {
 }
 
 export function SponsorsPage() {
+  useDocumentTitle('SPS CRM · Sponsors')
   const [items, setItems] = useState<Sponsor[]>([])
   const [companies, setCompanies] = useState<Company[]>([])
   const [q, setQ] = useState('')
@@ -157,6 +159,7 @@ export function SponsorsPage() {
       <div className="mb-4 flex gap-2">
         <Input
           placeholder="Search sponsors..."
+          aria-label="Search sponsors"
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => {
@@ -170,7 +173,7 @@ export function SponsorsPage() {
       </div>
 
       {error ? (
-        <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+        <p role="alert" className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
       ) : null}
 
       <Card>
@@ -189,7 +192,7 @@ export function SponsorsPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-sps-muted">
+                  <td colSpan={6} className="px-4 py-8 text-center text-sps-muted" role="status">
                     Loading...
                   </td>
                 </tr>
@@ -218,11 +221,21 @@ export function SponsorsPage() {
                     <td className="px-4 py-3">{s.year ?? '-'}</td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => openEdit(s)}>
-                          <Pencil className="h-3.5 w-3.5" />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          aria-label={`Edit ${s.name}`}
+                          onClick={() => openEdit(s)}
+                        >
+                          <Pencil className="h-3.5 w-3.5" aria-hidden />
                         </Button>
-                        <Button variant="ghost" size="sm" onClick={() => void onDelete(s)}>
-                          <Trash2 className="h-3.5 w-3.5 text-red-600" />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          aria-label={`Delete ${s.name}`}
+                          onClick={() => void onDelete(s)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5 text-red-600" aria-hidden />
                         </Button>
                       </div>
                     </td>
