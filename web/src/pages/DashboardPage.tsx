@@ -7,6 +7,7 @@ import {
   Users,
 } from 'lucide-react'
 import { api, ApiError } from '@/lib/api'
+import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { formatHkd } from '@/lib/utils'
 import type { DashboardStats, DealStage } from '@/types'
 import { DEAL_STAGES } from '@/types'
@@ -15,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { EmptyState } from '@/components/EmptyState'
 
 export function DashboardPage() {
+  useDocumentTitle('SPS CRM · Dashboard')
   const [stats, setStats] = useState<DashboardStats | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -77,9 +79,9 @@ export function DashboardPage() {
         title="Dashboard"
         description="Overview of St. Patrick's Society HK CRM."
       />
-      {loading ? <p className="text-sm text-sps-muted">Loading stats...</p> : null}
+      {loading ? <p role="status" className="text-sm text-sps-muted">Loading stats…</p> : null}
       {error ? (
-        <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+        <p role="alert" className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
       ) : null}
       {stats ? (
         <>
