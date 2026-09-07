@@ -1,6 +1,7 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react'
 import { Pencil, Plus, Trash2 } from 'lucide-react'
 import { api, ApiError } from '@/lib/api'
+import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { formatDate, formatHkd } from '@/lib/utils'
 import type { Company, Deal, DealCreate, DealStage } from '@/types'
 import { DEAL_STAGES } from '@/types'
@@ -56,6 +57,7 @@ function cleanPayload(form: DealCreate): DealCreate {
 }
 
 export function DealsPage() {
+  useDocumentTitle('SPS CRM · Deals')
   const [items, setItems] = useState<Deal[]>([])
   const [companies, setCompanies] = useState<Company[]>([])
   const [q, setQ] = useState('')
@@ -149,6 +151,7 @@ export function DealsPage() {
       <div className="mb-4 flex flex-wrap gap-2">
         <Input
           placeholder="Search deals..."
+          aria-label="Search deals"
           value={q}
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => {
@@ -157,6 +160,7 @@ export function DealsPage() {
           className="max-w-sm"
         />
         <Select
+          aria-label="Filter by stage"
           value={stageFilter}
           onChange={(e) => {
             const next = e.target.value as DealStage | ''
@@ -178,7 +182,7 @@ export function DealsPage() {
       </div>
 
       {error ? (
-        <p className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+        <p role="alert" className="mb-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
       ) : null}
 
       <Card>
@@ -197,7 +201,7 @@ export function DealsPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-sps-muted">
+                  <td colSpan={6} className="px-4 py-8 text-center text-sps-muted" role="status">
                     Loading...
                   </td>
                 </tr>
@@ -226,11 +230,21 @@ export function DealsPage() {
                     <td className="px-4 py-3">{formatDate(d.expected_close)}</td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-1">
-                        <Button variant="ghost" size="sm" onClick={() => openEdit(d)}>
-                          <Pencil className="h-3.5 w-3.5" />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          aria-label={`Edit ${d.title}`}
+                          onClick={() => openEdit(d)}
+                        >
+                          <Pencil className="h-3.5 w-3.5" aria-hidden />
                         </Button>
-                        <Button variant="ghost" size="sm" onClick={() => void onDelete(d)}>
-                          <Trash2 className="h-3.5 w-3.5 text-red-600" />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          aria-label={`Delete ${d.title}`}
+                          onClick={() => void onDelete(d)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5 text-red-600" aria-hidden />
                         </Button>
                       </div>
                     </td>
