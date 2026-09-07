@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react'
 import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '@/context/AuthContext'
+import { useDocumentTitle } from '@/hooks/useDocumentTitle'
 import { ApiError } from '@/lib/api'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -8,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 
 export function LoginPage() {
+  useDocumentTitle('SPS CRM · Login')
   const { user, loading, login } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -61,7 +63,11 @@ export function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4" onSubmit={onSubmit}>
+          <form
+            className="space-y-4"
+            onSubmit={onSubmit}
+            aria-describedby={error ? 'login-error' : undefined}
+          >
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -85,7 +91,14 @@ export function LoginPage() {
               />
             </div>
             {error ? (
-              <p className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{error}</p>
+              <p
+                id="login-error"
+                role="alert"
+                aria-live="assertive"
+                className="rounded-md bg-red-50 px-3 py-2 text-sm text-red-700"
+              >
+                {error}
+              </p>
             ) : null}
             <Button type="submit" className="w-full" disabled={submitting}>
               {submitting ? 'Signing in...' : 'Sign in'}

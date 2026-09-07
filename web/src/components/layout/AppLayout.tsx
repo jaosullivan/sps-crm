@@ -30,6 +30,9 @@ export function AppLayout() {
 
   return (
     <div className="flex min-h-screen">
+      <a href="#main" className="skip-link">
+        Skip to main content
+      </a>
       <aside className="flex w-60 flex-col border-r border-sps-border bg-white">
         <div className="border-b border-sps-border px-4 py-4">
           <div className="flex items-center gap-3">
@@ -48,12 +51,13 @@ export function AppLayout() {
             </div>
           </div>
         </div>
-        <nav className="flex flex-1 flex-col gap-1 p-3">
+        <nav aria-label="Primary" className="flex flex-1 flex-col gap-1 p-3">
           {nav.map(({ to, label, icon: Icon, end }) => (
             <NavLink
               key={to}
               to={to}
               end={end}
+              // React Router sets aria-current="page" on the active link
               className={({ isActive }) =>
                 cn(
                   'flex items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors',
@@ -63,7 +67,7 @@ export function AppLayout() {
                 )
               }
             >
-              <Icon className="h-4 w-4 shrink-0" />
+              <Icon className="h-4 w-4 shrink-0" aria-hidden />
               {label}
             </NavLink>
           ))}
@@ -74,12 +78,12 @@ export function AppLayout() {
           </div>
           <div className="mb-3 truncate text-xs text-sps-muted">{user?.email}</div>
           <Button variant="outline" size="sm" className="w-full" onClick={handleLogout}>
-            <LogOut className="h-3.5 w-3.5" />
+            <LogOut className="h-3.5 w-3.5" aria-hidden />
             Sign out
           </Button>
         </div>
       </aside>
-      <main className="flex-1 overflow-auto bg-sps-cream">
+      <main id="main" tabIndex={-1} className="flex-1 overflow-auto bg-sps-cream outline-none">
         <div className="mx-auto max-w-6xl px-6 py-8">
           <Outlet />
         </div>
